@@ -42,6 +42,25 @@ const DisplayTurn = styled.div`
   }
 `;
 
+const DisplayBingoStatus = styled.div`
+  display: flex;
+  justify-content: space-around;
+  font-size: 2vw;
+
+  @media (max-width: 768px) {
+    font-size: 6vw;
+  }
+`;
+
+const BingoStatusItem = styled.div`
+  ${(props) =>
+    props.strike &&
+    css`
+      text-decoration: line-through;
+      color: red;
+    `};
+`;
+
 const PeerIdInput = styled.input`
   text-align: center;
   font-size: 2vw;
@@ -63,7 +82,7 @@ const RButton = styled.button`
 `;
 
 const GameBoard = styled.div`
-  margin: 5vw;
+  margin: 2vw;
   display: grid;
   grid-template-columns: repeat(5, auto);
   grid-template-rows: auto;
@@ -165,7 +184,26 @@ const GameScreen = () => {
     )
     .reduce((a, b) => a + b);
 
-  const totalPoints = rowPoints + colPoints;
+  const diagonalOnePoint = numberBucket.reduce(
+    (diagonalScore, currentItem, currentIndex) => {
+      diagonalScore =
+        diagonalScore && currentItem[currentIndex].isMarked ? 1 : 0;
+      return diagonalScore;
+    },
+    1
+  );
+
+  const diagonalTwoPoint = numberBucket.reduce(
+    (diagonalScore, currentItem, currentIndex) => {
+      diagonalScore =
+        diagonalScore && currentItem[4 - currentIndex].isMarked ? 1 : 0;
+      return diagonalScore;
+    },
+    1
+  );
+
+  const totalPoints =
+    rowPoints + colPoints + diagonalOnePoint + diagonalTwoPoint;
 
   const gameBoxes = numberBucket.map((numberBucketRow) =>
     numberBucketRow.map((numberItem) => {
@@ -199,6 +237,13 @@ const GameScreen = () => {
 
       <GameSection hidden={isNotConnected || winnerStatus !== null}>
         <DisplayTurn>{!yourTurn ? "Opponents Turn" : "Your Turn"}</DisplayTurn>
+        <DisplayBingoStatus>
+          <BingoStatusItem strike={totalPoints > 0}>B</BingoStatusItem>
+          <BingoStatusItem strike={totalPoints > 1}>I</BingoStatusItem>
+          <BingoStatusItem strike={totalPoints > 2}>N</BingoStatusItem>
+          <BingoStatusItem strike={totalPoints > 3}>G</BingoStatusItem>
+          <BingoStatusItem strike={totalPoints > 4}>O</BingoStatusItem>
+        </DisplayBingoStatus>
         <GameBoard>{gameBoxes}</GameBoard>
         <BingoButton
           onClick={(e) => {

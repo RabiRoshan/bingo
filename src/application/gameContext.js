@@ -3,7 +3,7 @@ import { shuffleArray } from "../presentation/utils/arrayShuffle";
 import Peer from "peerjs";
 const peer = new Peer();
 
-export const GameContext = createContext({ numberBucket: [] });
+export const GameContext = createContext();
 
 export const GameProvider = (props) => {
   const random25 = generateRandom0to25();
@@ -83,12 +83,12 @@ export const GameProvider = (props) => {
       console.log(`Data from ${opponentPeer.peer}: ${data}`);
       if (data.value) {
         markValue(data.value, true);
-      }
-      if (data.bingo) {
+      } else if (data.bingo) {
         callBingo(true);
       }
     });
     opponentPeer.on("close", () => {
+      setConnectionState({ ...connectionState, opponentPeer: null });
       console.log(`Connection closed with: ${opponentPeer.peer}`);
       console.log("Reconnecting...");
       peer.connect(opponentPeer.peer);
