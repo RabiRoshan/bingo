@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/bingo/static/css/main.27fd15f6.chunk.css",
-    "main.js": "/bingo/static/js/main.573b5c28.chunk.js",
-    "main.js.map": "/bingo/static/js/main.573b5c28.chunk.js.map",
+    "main.js": "/bingo/static/js/main.9a6412bc.chunk.js",
+    "main.js.map": "/bingo/static/js/main.9a6412bc.chunk.js.map",
     "runtime-main.js": "/bingo/static/js/runtime-main.d558581a.js",
     "runtime-main.js.map": "/bingo/static/js/runtime-main.d558581a.js.map",
-    "static/js/2.02e2b93d.chunk.js": "/bingo/static/js/2.02e2b93d.chunk.js",
-    "static/js/2.02e2b93d.chunk.js.map": "/bingo/static/js/2.02e2b93d.chunk.js.map",
+    "static/js/2.1aa03ec6.chunk.js": "/bingo/static/js/2.1aa03ec6.chunk.js",
+    "static/js/2.1aa03ec6.chunk.js.map": "/bingo/static/js/2.1aa03ec6.chunk.js.map",
     "index.html": "/bingo/index.html",
-    "precache-manifest.3944fd1ee2d5e315a1860cc05de45b68.js": "/bingo/precache-manifest.3944fd1ee2d5e315a1860cc05de45b68.js",
+    "precache-manifest.cd72f79edce7e3fa6ee9a3bfcbd34201.js": "/bingo/precache-manifest.cd72f79edce7e3fa6ee9a3bfcbd34201.js",
     "service-worker.js": "/bingo/service-worker.js",
     "static/css/main.27fd15f6.chunk.css.map": "/bingo/static/css/main.27fd15f6.chunk.css.map",
-    "static/js/2.02e2b93d.chunk.js.LICENSE.txt": "/bingo/static/js/2.02e2b93d.chunk.js.LICENSE.txt"
+    "static/js/2.1aa03ec6.chunk.js.LICENSE.txt": "/bingo/static/js/2.1aa03ec6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.d558581a.js",
-    "static/js/2.02e2b93d.chunk.js",
+    "static/js/2.1aa03ec6.chunk.js",
     "static/css/main.27fd15f6.chunk.css",
-    "static/js/main.573b5c28.chunk.js"
+    "static/js/main.9a6412bc.chunk.js"
   ]
 }
