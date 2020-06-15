@@ -128,19 +128,22 @@ const BingoButton = styled.button`
 `;
 
 const GameScreen = () => {
-  const [
+  const {
     numberBucket,
     markValue,
     connectionState,
     joinToPeer,
     yourTurn,
-  ] = useContext(GameContext);
+    winnerStatus,
+    callBingo,
+  } = useContext(GameContext);
 
   const [opponentPeerId, setOpponentPeerId] = useState("");
   const [join, setJoin] = useState(true);
   const [copiedPeerId, setCopiedPeerId] = useState(false);
 
-  const isConnected = connectionState.peer && connectionState.opponentPeer;
+  const isNotConnected =
+    connectionState.peer && connectionState.opponentPeer ? false : true;
 
   const rowPoints = numberBucket.reduce((totalPoints, currentItem) => {
     const isRowBingo = currentItem.reduce((isBingo, currentItem) => {
@@ -190,13 +193,25 @@ const GameScreen = () => {
 
   return (
     <Display>
-      <GameSection hidden={!isConnected}>
+      {winnerStatus === 0 && "Draw"}
+      {winnerStatus < 0 && "You Lost"}
+      {winnerStatus > 0 && "You Won"}
+
+      <GameSection hidden={isNotConnected || winnerStatus !== null}>
         <DisplayTurn>{!yourTurn ? "Opponents Turn" : "Your Turn"}</DisplayTurn>
         <GameBoard>{gameBoxes}</GameBoard>
-        <BingoButton hidden={totalPoints < 5}>Bingo</BingoButton>
+        <BingoButton
+          onClick={(e) => {
+            e.preventDefault();
+            callBingo();
+          }}
+          hidden={totalPoints < 5}
+        >
+          Bingo
+        </BingoButton>
       </GameSection>
 
-      <ConnectionSection hidden={isConnected}>
+      <ConnectionSection hidden={!isNotConnected}>
         <JoinForm hidden={!join}>
           <PeerIdInput
             value={opponentPeerId}

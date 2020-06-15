@@ -16,6 +16,21 @@ export const GameProvider = (props) => {
 
   const [yourTurn, setYourTurn] = useState(true);
 
+  // winnerStatus = 0 => draw
+  // winnerStatus = -1 => opponent won
+  // winnerStatus = 1 => you won
+  let [winnerStatus, setWinnerStatus] = useState(null);
+
+  const callBingo = (fromOpponent = false) => {
+    const updatedWinnerStatus = winnerStatus === null ? 0 : winnerStatus;
+    if (fromOpponent) {
+      setWinnerStatus(updatedWinnerStatus - 1);
+    } else {
+      setWinnerStatus(updatedWinnerStatus + 1);
+      connectionState.opponentPeer.send({ bingo: true });
+    }
+  };
+
   const markValue = (value, fromOpponent = false) => {
     if (!fromOpponent) {
       setYourTurn(false);
@@ -23,8 +38,8 @@ export const GameProvider = (props) => {
     } else {
       setYourTurn(true);
     }
-    const updatedBucket = numberBucket.map((numberBucketRow, rowIndex) =>
-      numberBucketRow.map((numberItem, colIndex) => {
+    const updatedBucket = numberBucket.map((numberBucketRow) =>
+      numberBucketRow.map((numberItem) => {
         if (numberItem.value === value) {
           numberItem.isMarked = true;
         }
@@ -69,6 +84,9 @@ export const GameProvider = (props) => {
       if (data.value) {
         markValue(data.value, true);
       }
+      if (data.bingo) {
+        callBingo(true);
+      }
     });
     opponentPeer.on("close", () => {
       console.log(`Connection closed with: ${opponentPeer.peer}`);
@@ -82,7 +100,15 @@ export const GameProvider = (props) => {
 
   return (
     <GameContext.Provider
-      value={[numberBucket, markValue, connectionState, joinToPeer, yourTurn]}
+      value={{
+        numberBucket,
+        markValue,
+        connectionState,
+        joinToPeer,
+        yourTurn,
+        winnerStatus,
+        callBingo,
+      }}
     >
       {props.children}
     </GameContext.Provider>
