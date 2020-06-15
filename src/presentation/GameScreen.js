@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import styled, { css } from "styled-components";
 import { GameContext } from "../application/gameContext";
 
@@ -11,6 +11,9 @@ const GameBoard = styled.div`
   grid-template-rows: auto;
   gap: 0.5vw;
   place-content: center;
+  @media (max-width: 768px) {
+    gap: 2vw;
+  }
 `;
 
 const GameBox = styled.button`
@@ -37,6 +40,12 @@ const GameBox = styled.button`
       background-color: red;
       color: white;
     `};
+
+  @media (max-width: 768px) {
+    height: 15vw;
+    width: 15vw;
+    font-size: 6vw;
+  }
 `;
 
 const BingoButton = styled.button`
@@ -63,14 +72,47 @@ const BingoButton = styled.button`
 `;
 
 const GameScreen = () => {
-  const [numberBucket, markValue, score] = useContext(GameContext);
+  const [
+    numberBucket,
+    markValue,
+    connectionState,
+    joinToPeer,
+    yourTurn,
+  ] = useContext(GameContext);
+
+  const [opponentPeerId, setOpponentPeerId] = useState("");
+
+  const isConnected = connectionState.peer && connectionState.opponentPeer;
+
+  const rowPoints = numberBucket.reduce((totalPoints, currentItem) => {
+    const isRowBingo = currentItem.reduce((isBingo, currentItem) => {
+      return isBingo && currentItem.isMarked;
+    }, true);
+    return isRowBingo ? ++totalPoints : totalPoints;
+  }, 0);
+
+  const colPoints = numberBucket
+    .reduce(
+      (colPointArray, currentItem) => {
+        currentItem.forEach((item, index) => {
+          colPointArray[index] = colPointArray[index] && item.isMarked ? 1 : 0;
+        });
+
+        return colPointArray;
+      },
+      Array.from(Array(5), () => 1)
+    )
+    .reduce((a, b) => a + b);
+
+  const totalPoints = rowPoints + colPoints;
+
   const gameBoxes = numberBucket.map((numberBucketRow) =>
     numberBucketRow.map((numberItem) => {
       const { value, isMarked } = numberItem;
       return (
         <GameBox
           key={value}
-          disabled={isMarked}
+          disabled={isMarked || !yourTurn}
           onClick={(e) => {
             e.preventDefault();
             return markValue(value);
@@ -85,8 +127,28 @@ const GameScreen = () => {
 
   return (
     <GameWindow>
-      <GameBoard>{gameBoxes}</GameBoard>
-      <BingoButton hide={score < 5}>Bingo</BingoButton>
+      {isConnected ? (
+        <React.Fragment>
+          <GameBoard>{gameBoxes}</GameBoard>
+          <div>{!yourTurn ? "Opponents Turn" : "Your Turn"}</div>
+          <BingoButton hide={totalPoints < 5}>Bingo</BingoButton>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <input
+            value={opponentPeerId}
+            onChange={(e) => setOpponentPeerId(e.target.value)}
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              joinToPeer(opponentPeerId);
+            }}
+          >
+            Join
+          </button>
+        </React.Fragment>
+      )}
     </GameWindow>
   );
 };

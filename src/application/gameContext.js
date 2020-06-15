@@ -1,18 +1,11 @@
 import React, { useState, createContext } from "react";
 import { shuffleArray } from "../presentation/utils/arrayShuffle";
-
-const generateRandom0to25 = () =>
-  shuffleArray(
-    Array.from(Array(25), (_, index) => {
-      return { value: index + 1, isMarked: false };
-    })
-  );
+import Peer from "peerjs";
+const peer = new Peer();
 
 export const GameContext = createContext({ numberBucket: [] });
 
 export const GameProvider = (props) => {
-  let [score, setScore] = useState(0);
-
   const random25 = generateRandom0to25();
 
   const [numberBucket, setNumberBucket] = useState(
@@ -21,12 +14,19 @@ export const GameProvider = (props) => {
     )
   );
 
-  const markValue = (value) => {
+  const [yourTurn, setYourTurn] = useState(true);
+
+  const markValue = (value, fromOpponent = false) => {
+    if (!fromOpponent) {
+      setYourTurn(false);
+      connectionState.opponentPeer.send({ value });
+    } else {
+      setYourTurn(true);
+    }
     const updatedBucket = numberBucket.map((numberBucketRow, rowIndex) =>
       numberBucketRow.map((numberItem, colIndex) => {
         if (numberItem.value === value) {
           numberItem.isMarked = true;
-          checkBingo(rowIndex, colIndex);
         }
         return numberItem;
       })
@@ -34,32 +34,64 @@ export const GameProvider = (props) => {
     setNumberBucket(updatedBucket);
   };
 
-  const checkBingo = (rowIndex, colIndex) => {
-    const isRowBingo = numberBucket[rowIndex].reduce(
-      (isBingo, currentItem) => isBingo && currentItem.isMarked,
-      true
+  // PeerJS
+  const [connectionState, setConnectionState] = useState({
+    peer: null,
+    opponentPeer: null,
+  });
+
+  peer.on("open", (peerId) => {
+    console.log(`Your peer ID is: ${peerId}`);
+    setConnectionState({ ...connectionState, peer });
+  });
+
+  peer.on("disconnected", () => {
+    console.log(`Disconnected from peer server`);
+    setConnectionState({ ...connectionState, peer: null });
+  });
+
+  peer.on("connection", (conn) => onConnection(conn));
+
+  const joinToPeer = (opponentPeerId) => {
+    const opponentPeer = peer.connect(opponentPeerId);
+    setYourTurn(false);
+    onConnection(opponentPeer);
+  };
+
+  const onConnection = (opponentPeer) => {
+    console.log(`Connecting to: ${opponentPeer.peer}`);
+    opponentPeer.on("open", () => {
+      console.log("Connected!");
+      setConnectionState({ ...connectionState, opponentPeer });
+    });
+    opponentPeer.on("data", (data) => {
+      console.log(`Data from ${opponentPeer.peer}: ${data}`);
+      if (data.value) {
+        markValue(data.value, true);
+      }
+    });
+    opponentPeer.on("close", () => {
+      console.log(`Connection closed with: ${opponentPeer.peer}`);
+      console.log("Reconnecting...");
+      peer.connect(opponentPeer.peer);
+    });
+    opponentPeer.on("error", (err) =>
+      console.log(`Connection Error with ${opponentPeer.peer}: ${err}`)
     );
-
-    const isColBingo = numberBucket.reduce(
-      (isBingo, numberBucketRow) =>
-        isBingo && numberBucketRow[colIndex].isMarked,
-      true
-    );
-
-    if (isRowBingo) {
-      ++score;
-    }
-
-    if (isColBingo) {
-      ++score;
-    }
-
-    setScore(score);
   };
 
   return (
-    <GameContext.Provider value={[numberBucket, markValue, score]}>
+    <GameContext.Provider
+      value={[numberBucket, markValue, connectionState, joinToPeer, yourTurn]}
+    >
       {props.children}
     </GameContext.Provider>
   );
 };
+
+const generateRandom0to25 = () =>
+  shuffleArray(
+    Array.from(Array(25), (_, index) => {
+      return { value: index + 1, isMarked: false };
+    })
+  );
