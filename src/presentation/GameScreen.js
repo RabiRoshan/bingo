@@ -20,7 +20,7 @@ const GameSection = styled.div`
   text-align: center;
 `;
 
-const JoinForm = styled.div``;
+const JoinForm = styled.form``;
 
 const CreateForm = styled.div``;
 
@@ -65,7 +65,7 @@ const PeerIdInput = styled.input`
   text-align: center;
   font-size: 2vw;
   display: block;
-
+  margin: auto;
   @media (max-width: 768px) {
     font-size: 6vw;
   }
@@ -79,6 +79,14 @@ const RButton = styled.button`
     font-size: 6vw;
     margin: 6vw;
   }
+`;
+
+const CopyButton = styled(RButton)`
+  ${(props) =>
+    props.copied &&
+    css`
+      color: red;
+    `};
 `;
 
 const GameBoard = styled.div`
@@ -257,19 +265,20 @@ const GameScreen = () => {
       </GameSection>
 
       <ConnectionSection hidden={!isNotConnected}>
-        <JoinForm hidden={!join}>
+        <JoinForm
+          hidden={!join}
+          onSubmit={(e) => {
+            e.preventDefault();
+            joinToPeer(opponentPeerId);
+          }}
+        >
           <PeerIdInput
             value={opponentPeerId}
+            placeholder="Enter Opponent Id"
+            required
             onChange={(e) => setOpponentPeerId(e.target.value)}
           />
-          <RButton
-            onClick={(e) => {
-              e.preventDefault();
-              joinToPeer(opponentPeerId);
-            }}
-          >
-            Join
-          </RButton>
+          <RButton>Join</RButton>
           <div>or</div>
           <RButton
             onClick={(e) => {
@@ -277,7 +286,7 @@ const GameScreen = () => {
               setJoin(false);
             }}
           >
-            Create
+            Create And Share Id
           </RButton>
         </JoinForm>
         <CreateForm hidden={join}>
@@ -293,14 +302,15 @@ const GameScreen = () => {
           >
             Back
           </RButton>
-          <RButton
+          <CopyButton
+            copied={copiedPeerId ? true : false}
             onClick={(e) => {
               e.preventDefault();
               copyPeerIdToClipboard();
             }}
           >
             {copiedPeerId ? "Copied" : "Copy"}
-          </RButton>
+          </CopyButton>
         </CreateForm>
       </ConnectionSection>
     </Display>
