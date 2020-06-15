@@ -1,11 +1,69 @@
 import React, { useContext, useState } from "react";
+import copy from "copy-to-clipboard";
 import styled, { css } from "styled-components";
 import { GameContext } from "../application/gameContext";
 
-const GameWindow = styled.div`
+const Display = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+`;
+
+const ConnectionSection = styled.div`
   text-align: center;
 `;
+
+const GameSection = styled.div`
+  text-align: center;
+`;
+
+const JoinForm = styled.div``;
+
+const CreateForm = styled.div``;
+
+const DisplayPeerId = styled.div`
+  font-size: 2vw;
+  display: block;
+
+  @media (max-width: 768px) {
+    font-size: 6vw;
+  }
+`;
+
+const DisplayTurn = styled.div`
+  font-size: 2vw;
+  display: block;
+
+  @media (max-width: 768px) {
+    font-size: 6vw;
+  }
+`;
+
+const PeerIdInput = styled.input`
+  text-align: center;
+  font-size: 2vw;
+  display: block;
+
+  @media (max-width: 768px) {
+    font-size: 6vw;
+  }
+`;
+
+const RButton = styled.button`
+  margin: 2vw;
+  font-size: 2vw;
+
+  @media (max-width: 768px) {
+    font-size: 6vw;
+    margin: 6vw;
+  }
+`;
+
 const GameBoard = styled.div`
+  margin: 5vw;
   display: grid;
   grid-template-columns: repeat(5, auto);
   grid-template-rows: auto;
@@ -64,11 +122,9 @@ const BingoButton = styled.button`
     color: slategray;
   }
 
-  ${(props) =>
-    props.hide &&
-    css`
-      display: none;
-    `};
+  @media (max-width: 768px) {
+    font-size: 6vw;
+  }
 `;
 
 const GameScreen = () => {
@@ -81,6 +137,8 @@ const GameScreen = () => {
   ] = useContext(GameContext);
 
   const [opponentPeerId, setOpponentPeerId] = useState("");
+  const [join, setJoin] = useState(true);
+  const [copiedPeerId, setCopiedPeerId] = useState(false);
 
   const isConnected = connectionState.peer && connectionState.opponentPeer;
 
@@ -125,31 +183,67 @@ const GameScreen = () => {
     })
   );
 
+  const copyPeerIdToClipboard = () => {
+    copy(connectionState.peer && connectionState.peer.id);
+    setCopiedPeerId(true);
+  };
+
   return (
-    <GameWindow>
-      {isConnected ? (
-        <React.Fragment>
-          <GameBoard>{gameBoxes}</GameBoard>
-          <div>{!yourTurn ? "Opponents Turn" : "Your Turn"}</div>
-          <BingoButton hide={totalPoints < 5}>Bingo</BingoButton>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <input
+    <Display>
+      <GameSection hidden={!isConnected}>
+        <DisplayTurn>{!yourTurn ? "Opponents Turn" : "Your Turn"}</DisplayTurn>
+        <GameBoard>{gameBoxes}</GameBoard>
+        <BingoButton hidden={totalPoints < 5}>Bingo</BingoButton>
+      </GameSection>
+
+      <ConnectionSection hidden={isConnected}>
+        <JoinForm hidden={!join}>
+          <PeerIdInput
             value={opponentPeerId}
             onChange={(e) => setOpponentPeerId(e.target.value)}
           />
-          <button
+          <RButton
             onClick={(e) => {
               e.preventDefault();
               joinToPeer(opponentPeerId);
             }}
           >
             Join
-          </button>
-        </React.Fragment>
-      )}
-    </GameWindow>
+          </RButton>
+          <div>or</div>
+          <RButton
+            onClick={(e) => {
+              e.preventDefault();
+              setJoin(false);
+            }}
+          >
+            Create
+          </RButton>
+        </JoinForm>
+        <CreateForm hidden={join}>
+          <DisplayPeerId onClick={copyPeerIdToClipboard}>
+            {(connectionState.peer && connectionState.peer.id) ||
+              "Creating Id..."}
+          </DisplayPeerId>
+          <RButton
+            onClick={(e) => {
+              e.preventDefault();
+              setJoin(true);
+            }}
+          >
+            Back
+          </RButton>
+          <RButton
+            onClick={(e) => {
+              e.preventDefault();
+              copyPeerIdToClipboard();
+            }}
+          >
+            {copiedPeerId ? "Copied" : "Copy"}
+          </RButton>
+        </CreateForm>
+      </ConnectionSection>
+    </Display>
   );
 };
 
