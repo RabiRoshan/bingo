@@ -274,7 +274,7 @@ const GameScreen = () => {
         >
           <PeerIdInput
             value={opponentPeerId}
-            placeholder="Enter Opponent Id"
+            placeholder="Enter Room Id"
             required
             onChange={(e) => setOpponentPeerId(e.target.value)}
           />
