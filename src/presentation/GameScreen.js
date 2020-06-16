@@ -312,6 +312,13 @@ const GameScreen = () => {
             {copiedPeerId ? "Copied" : "Copy"}
           </CopyButton>
         </CreateForm>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/RabiRoshan/bingo#instructions"
+        >
+          Read Instructions
+        </a>
       </ConnectionSection>
     </Display>
   );
