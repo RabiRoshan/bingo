@@ -1,4 +1,5 @@
 ## Classic Indian School Bingo using WebRTC
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 ### Play At: https://rabiroshan.github.io/bingo/
 
