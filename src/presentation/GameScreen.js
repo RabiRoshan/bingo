@@ -4,7 +4,8 @@ import styled, { css } from "styled-components";
 import { GameContext } from "../application/gameContext";
 
 const Display = styled.div`
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #fbfffe;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -20,13 +21,21 @@ const GameSection = styled.div`
   text-align: center;
 `;
 
+const ReadInstructionsLink = styled.a`
+  color: #003459;
+`;
+
 const JoinForm = styled.form``;
 
 const CreateForm = styled.div``;
 
 const DisplayPeerId = styled.div`
-  font-size: 2vw;
   display: block;
+  font-size: 2vw;
+
+  :hover {
+    cursor: pointer;
+  }
 
   @media (max-width: 768px) {
     font-size: 6vw;
@@ -34,17 +43,25 @@ const DisplayPeerId = styled.div`
 `;
 
 const DisplayTurn = styled.div`
-  font-size: 2vw;
   display: block;
+  color: #003459;
+  font-size: 2vw;
+  font-weight: bold;
 
   @media (max-width: 768px) {
     font-size: 6vw;
   }
+  ${(props) =>
+    props.yourTurn &&
+    css`
+      color: red;
+    `}
 `;
 
 const DisplayBingoStatus = styled.div`
   display: flex;
   justify-content: space-around;
+  color: #003459;
   font-size: 2vw;
 
   @media (max-width: 768px) {
@@ -62,22 +79,46 @@ const BingoStatusItem = styled.div`
 `;
 
 const PeerIdInput = styled.input`
-  text-align: center;
-  font-size: 2vw;
   display: block;
   margin: auto;
+  background-color: #fbfffe;
+  border: 0.3vw solid #00a8e8;
+  border-radius: 1vw;
+  text-align: center;
+  font-size: 2vw;
+
+  :focus {
+    outline: none;
+  }
+
   @media (max-width: 768px) {
     font-size: 6vw;
+    border-width: 0.9vw;
+    border-radius: 3vw;
   }
 `;
 
 const RButton = styled.button`
+  background-color: #00a8e8;
+  color: #fbfffe;
   margin: 2vw;
+  border: none;
+  border-radius: 1vw;
+  text-align: center;
   font-size: 2vw;
 
+  :focus {
+    outline: none;
+  }
+
+  :hover {
+    cursor: pointer;
+  }
+
   @media (max-width: 768px) {
-    font-size: 6vw;
     margin: 6vw;
+    font-size: 6vw;
+    border-radius: 3vw;
   }
 `;
 
@@ -86,6 +127,7 @@ const CopyButton = styled(RButton)`
     props.copied &&
     css`
       color: red;
+      background-color: #003459;
     `};
 `;
 
@@ -94,50 +136,54 @@ const GameBoard = styled.div`
   display: grid;
   grid-template-columns: repeat(5, auto);
   grid-template-rows: auto;
-  gap: 0.5vw;
   place-content: center;
+  gap: 0.5vw;
+
   @media (max-width: 768px) {
     gap: 2vw;
   }
 `;
 
 const GameBox = styled.button`
-  background-color: slateblue;
-  color: white;
-  font-size: 2vw;
+  background-color: #00a8e8;
+  color: #fbfffe;
   height: 5vw;
   width: 5vw;
   border: none;
+  border-radius: 1vw;
   text-align: center;
+  font-size: 2vw;
 
   :focus {
     outline: none;
   }
 
   :active {
-    background-color: white;
-    color: slateblue;
+    background-color: #fbfffe;
+    color: #00a8e8;
   }
 
   ${(props) =>
     props.isMarked &&
     css`
       background-color: red;
-      color: white;
     `};
 
   @media (max-width: 768px) {
     height: 15vw;
     width: 15vw;
     font-size: 6vw;
+    border-radius: 3vw;
   }
 `;
 
 const BingoButton = styled.button`
-  background-color: slategray;
+  background-color: red;
+  margin: 1vw;
   color: white;
   font-size: 2vw;
   border: none;
+  border-radius: 1vw;
   text-align: center;
 
   :focus {
@@ -151,6 +197,8 @@ const BingoButton = styled.button`
 
   @media (max-width: 768px) {
     font-size: 6vw;
+    margin: 3vw;
+    border-radius: 3vw;
   }
 `;
 
@@ -244,7 +292,6 @@ const GameScreen = () => {
       {winnerStatus > 0 && "You Won"}
 
       <GameSection hidden={isNotConnected || winnerStatus !== null}>
-        <DisplayTurn>{!yourTurn ? "Opponents Turn" : "Your Turn"}</DisplayTurn>
         <DisplayBingoStatus>
           <BingoStatusItem strike={totalPoints > 0}>B</BingoStatusItem>
           <BingoStatusItem strike={totalPoints > 1}>I</BingoStatusItem>
@@ -252,7 +299,11 @@ const GameScreen = () => {
           <BingoStatusItem strike={totalPoints > 3}>G</BingoStatusItem>
           <BingoStatusItem strike={totalPoints > 4}>O</BingoStatusItem>
         </DisplayBingoStatus>
+
         <GameBoard>{gameBoxes}</GameBoard>
+        <DisplayTurn yourTurn={yourTurn}>
+          {yourTurn ? "Your Turn" : "Opponents Turn"}
+        </DisplayTurn>
         <BingoButton
           onClick={(e) => {
             e.preventDefault();
@@ -260,7 +311,7 @@ const GameScreen = () => {
           }}
           hidden={totalPoints < 5}
         >
-          Bingo
+          CALL BINGO
         </BingoButton>
       </GameSection>
 
@@ -312,13 +363,13 @@ const GameScreen = () => {
             {copiedPeerId ? "Copied" : "Copy"}
           </CopyButton>
         </CreateForm>
-        <a
+        <ReadInstructionsLink
           target="_blank"
           rel="noopener noreferrer"
           href="https://github.com/RabiRoshan/bingo#instructions"
         >
           Read Instructions
-        </a>
+        </ReadInstructionsLink>
       </ConnectionSection>
     </Display>
   );
