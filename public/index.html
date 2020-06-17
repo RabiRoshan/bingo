@@ -25,6 +25,38 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Bingo!</title>
+
+    <!-- Buy Me a Coffee Script -->
+    <script
+      data-name="BMC-Widget"
+      src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+      data-id="rabiroshan"
+      data-description="If you enjoyed, you can buy me a coffee!"
+      data-message="Thank you for visiting. You can now buy me a coffee! 😋"
+      data-color="#FF813F"
+      data-position="right"
+      data-x_margin="18"
+      data-y_margin="18"
+    ></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- custom styles -->
+    <style>
+      #github-button-container {
+        position: absolute;
+        bottom: 1vw;
+        left: 1vw;
+      }
+      @media (max-width: 768px) {
+        #github-button-container {
+          top: 2vw;
+          left: 2vw;
+          height: 0;
+        }
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -39,5 +71,16 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <!-- Place this tag where you want the button to render. -->
+    <div id="github-button-container">
+      <a
+        class="github-button"
+        href="https://github.com/rabiroshan/bingo"
+        data-color-scheme="no-preference: light; light: light; dark: dark;"
+        data-size="large"
+        aria-label="View on GitHub"
+        >View on GitHub</a
+      >
+    </div>
   </body>
 </html>
