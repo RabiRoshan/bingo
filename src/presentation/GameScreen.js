@@ -17,6 +17,27 @@ const ConnectionSection = styled.div`
   text-align: center;
 `;
 
+const DisplayGameEnd = styled.div`
+  font-size: 6vw;
+  text-align: center;
+
+  ${(props) => {
+    if (props.status === 1) {
+      return css`
+        color: #00a8e8;
+      `;
+    } else if (props.status === -1) {
+      return css`
+        color: red;
+      `;
+    } else {
+      return css`
+        color: orange;
+      `;
+    }
+  }}
+`;
+
 const GameSection = styled.div`
   text-align: center;
 `;
@@ -287,9 +308,21 @@ const GameScreen = () => {
 
   return (
     <Display>
-      {winnerStatus === 0 && "Draw"}
-      {winnerStatus < 0 && "You Lost"}
-      {winnerStatus > 0 && "You Won"}
+      <DisplayGameEnd hidden={winnerStatus === null} status={winnerStatus}>
+        <div>
+          {winnerStatus === 0 && "Draw 🤪"}
+          {winnerStatus < 0 && "You Lost 😅"}
+          {winnerStatus > 0 && "You Won 😁"}
+        </div>
+        <RButton
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.reload();
+          }}
+        >
+          Play Again
+        </RButton>
+      </DisplayGameEnd>
 
       <GameSection hidden={isNotConnected || winnerStatus !== null}>
         <DisplayBingoStatus>
@@ -315,7 +348,7 @@ const GameScreen = () => {
         </BingoButton>
       </GameSection>
 
-      <ConnectionSection hidden={!isNotConnected}>
+      <ConnectionSection hidden={!isNotConnected || winnerStatus !== null}>
         <JoinForm
           hidden={!join}
           onSubmit={(e) => {
@@ -345,6 +378,9 @@ const GameScreen = () => {
             {(connectionState.peer && connectionState.peer.id) ||
               "Creating Id..."}
           </DisplayPeerId>
+          <div hidden={!copiedPeerId}>
+            (Share Id with opponent and wait for them to join. Do not go back!)
+          </div>
           <RButton
             onClick={(e) => {
               e.preventDefault();
