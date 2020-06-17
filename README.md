@@ -14,4 +14,4 @@
 6. The first player to press the Bingo button will win. If both players press at the same time, then the game will be a draw.
 7. Thats it! Happy Bingo.
 
-<a href="https://www.buymeacoffee.com/rabiroshan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
+<center><a href="https://www.buymeacoffee.com/rabiroshan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a></center>
