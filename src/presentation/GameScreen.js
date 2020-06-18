@@ -1,227 +1,22 @@
 import React, { useContext, useState } from "react";
 import copy from "copy-to-clipboard";
-import styled, { css } from "styled-components";
+import {
+  RDisplay,
+  RButton,
+  RSection,
+  RLink,
+  GameBoard,
+  GameBox,
+  DisplayGameEnd,
+  DisplayBingoStatus,
+  BingoStatusItem,
+  DisplayTurn,
+  BingoButton,
+  PeerIdInput,
+  DisplayPeerId,
+  CopyButton,
+} from "./StyledComponents";
 import { GameContext } from "../application/gameContext";
-
-const Display = styled.div`
-  min-height: 100vh;
-  background-color: #fbfffe;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-`;
-
-const ConnectionSection = styled.div`
-  text-align: center;
-`;
-
-const DisplayGameEnd = styled.div`
-  font-size: 6vw;
-  text-align: center;
-
-  ${(props) => {
-    if (props.status === 1) {
-      return css`
-        color: #00a8e8;
-      `;
-    } else if (props.status === -1) {
-      return css`
-        color: red;
-      `;
-    } else {
-      return css`
-        color: orange;
-      `;
-    }
-  }}
-`;
-
-const GameSection = styled.div`
-  text-align: center;
-`;
-
-const ReadInstructionsLink = styled.a`
-  color: #003459;
-`;
-
-const JoinForm = styled.form``;
-
-const CreateForm = styled.div``;
-
-const DisplayPeerId = styled.div`
-  display: block;
-  font-size: 2vw;
-
-  :hover {
-    cursor: pointer;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 6vw;
-  }
-`;
-
-const DisplayTurn = styled.div`
-  display: block;
-  color: #003459;
-  font-size: 2vw;
-  font-weight: bold;
-
-  @media (max-width: 768px) {
-    font-size: 6vw;
-  }
-  ${(props) =>
-    props.yourTurn &&
-    css`
-      color: red;
-    `}
-`;
-
-const DisplayBingoStatus = styled.div`
-  display: flex;
-  justify-content: space-around;
-  color: #003459;
-  font-size: 2vw;
-
-  @media (max-width: 768px) {
-    font-size: 6vw;
-  }
-`;
-
-const BingoStatusItem = styled.div`
-  ${(props) =>
-    props.strike &&
-    css`
-      text-decoration: line-through;
-      color: red;
-    `};
-`;
-
-const PeerIdInput = styled.input`
-  display: block;
-  margin: auto;
-  background-color: #fbfffe;
-  border: 0.3vw solid #00a8e8;
-  border-radius: 1vw;
-  text-align: center;
-  font-size: 2vw;
-
-  :focus {
-    outline: none;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 6vw;
-    border-width: 0.9vw;
-    border-radius: 3vw;
-  }
-`;
-
-const RButton = styled.button`
-  background-color: #00a8e8;
-  color: #fbfffe;
-  margin: 2vw;
-  border: none;
-  border-radius: 1vw;
-  text-align: center;
-  font-size: 2vw;
-
-  :focus {
-    outline: none;
-  }
-
-  :hover {
-    cursor: pointer;
-  }
-
-  @media (max-width: 768px) {
-    margin: 6vw;
-    font-size: 6vw;
-    border-radius: 3vw;
-  }
-`;
-
-const CopyButton = styled(RButton)`
-  ${(props) =>
-    props.copied &&
-    css`
-      color: red;
-      background-color: #003459;
-    `};
-`;
-
-const GameBoard = styled.div`
-  margin: 2vw;
-  display: grid;
-  grid-template-columns: repeat(5, auto);
-  grid-template-rows: auto;
-  place-content: center;
-  gap: 0.5vw;
-
-  @media (max-width: 768px) {
-    gap: 2vw;
-  }
-`;
-
-const GameBox = styled.button`
-  background-color: #00a8e8;
-  color: #fbfffe;
-  height: 5vw;
-  width: 5vw;
-  border: none;
-  border-radius: 1vw;
-  text-align: center;
-  font-size: 2vw;
-
-  :focus {
-    outline: none;
-  }
-
-  :active {
-    background-color: #fbfffe;
-    color: #00a8e8;
-  }
-
-  ${(props) =>
-    props.isMarked &&
-    css`
-      background-color: red;
-    `};
-
-  @media (max-width: 768px) {
-    height: 15vw;
-    width: 15vw;
-    font-size: 6vw;
-    border-radius: 3vw;
-  }
-`;
-
-const BingoButton = styled.button`
-  background-color: red;
-  margin: 1vw;
-  color: white;
-  font-size: 2vw;
-  border: none;
-  border-radius: 1vw;
-  text-align: center;
-
-  :focus {
-    outline: none;
-  }
-
-  :active {
-    background-color: white;
-    color: slategray;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 6vw;
-    margin: 3vw;
-    border-radius: 3vw;
-  }
-`;
 
 const GameScreen = () => {
   const {
@@ -307,7 +102,7 @@ const GameScreen = () => {
   };
 
   return (
-    <Display>
+    <RDisplay>
       <DisplayGameEnd hidden={winnerStatus === null} status={winnerStatus}>
         <div>
           {winnerStatus === 0 && "Draw 🤪"}
@@ -324,7 +119,7 @@ const GameScreen = () => {
         </RButton>
       </DisplayGameEnd>
 
-      <GameSection hidden={isNotConnected || winnerStatus !== null}>
+      <RSection hidden={isNotConnected || winnerStatus !== null}>
         <DisplayBingoStatus>
           <BingoStatusItem strike={totalPoints > 0}>B</BingoStatusItem>
           <BingoStatusItem strike={totalPoints > 1}>I</BingoStatusItem>
@@ -346,10 +141,10 @@ const GameScreen = () => {
         >
           CALL BINGO
         </BingoButton>
-      </GameSection>
+      </RSection>
 
-      <ConnectionSection hidden={!isNotConnected || winnerStatus !== null}>
-        <JoinForm
+      <RSection hidden={!isNotConnected || winnerStatus !== null}>
+        <form
           hidden={!join}
           onSubmit={(e) => {
             e.preventDefault();
@@ -358,7 +153,7 @@ const GameScreen = () => {
         >
           <PeerIdInput
             value={opponentPeerId}
-            placeholder="Enter Room Id"
+            placeholder="Enter Game Code"
             required
             onChange={(e) => setOpponentPeerId(e.target.value)}
           />
@@ -370,16 +165,17 @@ const GameScreen = () => {
               setJoin(false);
             }}
           >
-            Create And Share Id
+            Generate And Share Code
           </RButton>
-        </JoinForm>
-        <CreateForm hidden={join}>
+        </form>
+        <form hidden={join}>
           <DisplayPeerId onClick={copyPeerIdToClipboard}>
             {(connectionState.peer && connectionState.peer.id) ||
-              "Creating Id..."}
+              "Generating Code..."}
           </DisplayPeerId>
           <div hidden={!copiedPeerId}>
-            (Share Id with opponent and wait for them to join. Do not go back!)
+            (Share this code with your friend and wait for them to join. Do not
+            go back!)
           </div>
           <RButton
             onClick={(e) => {
@@ -398,16 +194,16 @@ const GameScreen = () => {
           >
             {copiedPeerId ? "Copied" : "Copy"}
           </CopyButton>
-        </CreateForm>
-        <ReadInstructionsLink
+        </form>
+        <RLink
           target="_blank"
           rel="noopener noreferrer"
           href="https://github.com/RabiRoshan/bingo#instructions"
         >
           Read Instructions
-        </ReadInstructionsLink>
-      </ConnectionSection>
-    </Display>
+        </RLink>
+      </RSection>
+    </RDisplay>
   );
 };
 
